@@ -55,6 +55,6 @@ class Connector
             'key' => $this->token,
             'port' => $this->port,
             'options' => $this->options
-        ]);
+        ], JSON_THROW_ON_ERROR);
     }
 }

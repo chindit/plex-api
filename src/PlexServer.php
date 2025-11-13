@@ -252,6 +252,8 @@ class PlexServer
 
     public static function fromString(string $data): self
     {
-        return new self(...json_decode(base64_decode($data), true));
+	    /** @var object{host: string, key: string, port: int, options: array<string, mixed>} $params */
+	    $params = json_decode(base64_decode($data));
+	    return new self($params->host, $params->key, $params->port, $params->options);
     }
 }
