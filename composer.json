@@ -2,16 +2,16 @@
     "name": "chindit/plex-api",
     "description": "A simple API library to interact with a Plex server",
     "type": "library",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "require": {
         "php": "^8.2",
         "ext-simplexml": "*",
         "chindit/collection": "^1.0",
-        "symfony/http-client": "^7.1"
+        "symfony/http-client": "^7.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^11.3",
-        "phpstan/phpstan": "^1.12"
+        "phpunit/phpunit": "^12.4",
+        "phpstan/phpstan": "^2.1"
     },
     "license": "GPL-3.0-or-later",
     "autoload": {
