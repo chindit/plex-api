@@ -14,6 +14,7 @@ use Chindit\PlexApi\Model\Server;
 use Chindit\PlexApi\Model\Show;
 use Chindit\PlexApi\Service\Connector;
 use Chindit\PlexApi\Service\XmlParser;
+use Symfony\Component\HttpClient\Exception\ClientException;
 
 class PlexServer
 {
@@ -84,7 +85,7 @@ class PlexServer
 		foreach ($serverResponse->Directory as $library) {
 			$libraries[] = new Library(
 				(int)$library->attributes()['key'],
-				$library->attributes()['allowSync'] === '1',
+				(string)$library->attributes()['allowSync'] === '1',
 				(string)$library->attributes()['thumb'],
 				match ((string)$library->attributes()['type']) {
 					'movie' => LibraryType::Movie,
@@ -130,6 +131,8 @@ class PlexServer
 					$items[] = new Show(array_merge(
 						XmlParser::getGlobalAttributes($item),
 						[
+							'seasonCount' => (int)$item->attributes()['seasonCount'],
+							'totalEpisodes' => (int)$item->attributes()['totalEpisodes'],
 							'episodes' => $this->getShowEpisodes((int)$item->attributes()['ratingKey']),
 						],
 					));
@@ -169,8 +172,8 @@ class PlexServer
 							XmlParser::getGlobalAttributes($episode),
 							XmlParser::getTechnicalAttributes($episode),
 							[
-								'season' => (string)$episode->attributes()[ 'parentIndex' ],
-								'episode' => (string)$episode->attributes()[ 'index' ],
+								'season' => (int)$episode->attributes()[ 'parentIndex' ],
+								'episode' => (int)$episode->attributes()[ 'index' ],
 							],
 						)
 					);
@@ -240,6 +243,22 @@ class PlexServer
 		return $tracks;
 	}
 
+	public function refreshMovie(Movie $movie): ?Movie
+	{
+		try {
+			$serverResponse = $this->connector->get('/library/metadata/' . $movie->getRatingKey());
+		} catch (ClientException $e) {
+			return null;
+		}
+
+		return new Movie(array_merge(XmlParser::getGlobalAttributes($serverResponse), XmlParser::getTechnicalAttributes($serverResponse)));
+	}
+
+	public function getFromKey(int|string $ratingKey): ?Movie
+	{
+		return $this->refreshMovie(new Movie(['ratingKey' => $ratingKey]));
+	}
+
     public function getThumb(string $thumb): string
     {
         return $this->connector->getRaw($thumb);
@@ -250,10 +269,10 @@ class PlexServer
         return base64_encode($this->connector->export());
     }
 
-    public static function fromString(string $data): self
-    {
-	    /** @var object{host: string, key: string, port: int, options: array<string, mixed>} $params */
-	    $params = json_decode(base64_decode($data));
-	    return new self($params->host, $params->key, $params->port, $params->options);
-    }
+	    public static function fromString(string $data): self
+	    {
+		    /** @var array{host: string, key: string, port: int, options: array<string, mixed>} $params */
+		    $params = json_decode(base64_decode($data), true);
+		    return new self($params['host'], $params['key'], $params['port'], $params['options']);
+	    }
 }
