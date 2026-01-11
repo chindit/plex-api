@@ -251,7 +251,8 @@ class PlexServer
 			return null;
 		}
 
-		return new Movie(array_merge(XmlParser::getGlobalAttributes($serverResponse), XmlParser::getTechnicalAttributes($serverResponse)));
+		$item = $serverResponse->children()[0];
+		return new Movie(array_merge(XmlParser::getGlobalAttributes($item), XmlParser::getTechnicalAttributes($item)));
 	}
 
 	public function getFromKey(int|string $ratingKey): ?Movie

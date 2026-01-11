@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "48a2097752e2ca1aaddaf2ddc8f4c790",
+    "content-hash": "40aa47795afea76953ea240e70aa3c23",
     "packages": [
         {
             "name": "chindit/collection",
@@ -2216,7 +2216,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.2",
+        "php": "^8.4",
         "ext-simplexml": "*"
     },
     "platform-dev": {},

@@ -17,11 +17,11 @@ class XmlParser
 		return array_merge(
 			array_values((array)$item->attributes())[0],
 			[
-				'genres' => (new Collection($item->xpath('Genre') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
-				'directors' => (new Collection($item->xpath('Director') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
-				'writers' => (new Collection($item->xpath('Writer') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
-				'countries' => (new Collection($item->xpath('Country') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
-				'actors' => (new Collection($item->xpath('Role') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
+				'genres' => (new Collection($item->xpath('.//Genre') ?? []))->map(fn(\SimpleXMLElement $element) => (string)$element['tag'])->toArray(),
+				'directors' => (new Collection($item->xpath('.//Director') ?? []))->map(fn(\SimpleXMLElement $element) => (string)$element['tag'])->toArray(),
+				'writers' => (new Collection($item->xpath('.//Writer') ?? []))->map(fn(\SimpleXMLElement $element) => (string)$element['tag'])->toArray(),
+				'countries' => (new Collection($item->xpath('.//Country') ?? []))->map(fn(\SimpleXMLElement $element) => (string)$element['tag'])->toArray(),
+				'actors' => (new Collection($item->xpath('.//Role') ?? []))->map(fn(\SimpleXMLElement $element) => (string)$element['tag'])->toArray(),
 			]
 		);
 	}
