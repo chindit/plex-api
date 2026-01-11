@@ -17,11 +17,11 @@ class XmlParser
 		return array_merge(
 			array_values((array)$item->attributes())[0],
 			[
-				'genres' => (new Collection($item->xpath('Genre')))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
-				'directors' => (new Collection($item->xpath('Director')))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
-				'writers' => (new Collection($item->xpath('Writer')))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
-				'countries' => (new Collection($item->xpath('Country')))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
-				'actors' => (new Collection($item->xpath('Role')))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
+				'genres' => (new Collection($item->xpath('Genre') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
+				'directors' => (new Collection($item->xpath('Director') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
+				'writers' => (new Collection($item->xpath('Writer') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
+				'countries' => (new Collection($item->xpath('Country') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
+				'actors' => (new Collection($item->xpath('Role') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
 			]
 		);
 	}
@@ -61,8 +61,8 @@ class XmlParser
 			'artist' => (string)$mediaAttributes['title'],
 			'description' => (string)$mediaAttributes['summary'],
 			'thumb' => (string)$mediaAttributes['thumb'],
-			'genres' => (new Collection($item->xpath('Genre')))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
-			'countries' => (new Collection($item->xpath('Country')))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
+			'genres' => (new Collection($item->xpath('Genre') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
+			'countries' => (new Collection($item->xpath('Country') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
 		];
 	}
 
@@ -79,8 +79,8 @@ class XmlParser
 			'title' => (string)$mediaAttributes['title'],
 			'thumb' => (string)$mediaAttributes['thumb'],
 			'releasedAt' => \DateTime::createFromFormat('Y-m-d', (string)$mediaAttributes['originallyAvailableAt']),
-			'genres' => (new Collection($album->xpath('Genre')))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
-			'directors' => (new Collection($album->xpath('Director')))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
+			'genres' => (new Collection($album->xpath('Genre') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
+			'directors' => (new Collection($album->xpath('Director') ?? []))->map(fn(\SimpleXMLElement $element) => (array)$element->attributes())->flatten()->toArray(),
 		];
 	}
 

@@ -39,16 +39,18 @@ Once your `$plexserver` instance created, following methods are available:
 * `sessionsCount(): int` Returns the number of active sessions on the server.  An active session is a device streaming a media.
 * `libraries(): array<Library>` Returns all you libraries.  A Plex library is a general section like your «Movies» or «Shows» categories.  All your medias are contained in libraries.
 * `library(int $libraryId): array<Movie|Show>`  Return all the media contained in a specific library.  Library id can be obtained by a `getId()` on a `Library` object.
+* `getFromKey(int|string $ratingKey): ?Movie` Return 0 or 1 movie based on the given rating key.
+* `refreshMovie(Movie $movie): ?Movie` Refresh movie information from Plex server. Will return `null` if movie is not longer found on Plex.
 
    Example:
    ```php
    $myLibraries = $plexServer->libraries();
-   $theLibraryIWant = $myLibraries[0]; // Choose any libray you want;
+   $theLibraryIWant = $myLibraries[0]; // Choose any library you want;
    $myMedias = $plexServer->library($theLibraryIWant->getId());
    ```
 
     Response is an array of `Chindit\Model\Movie` and `Chindit\Model\Show` objects.
 
-### Need help ?
+### Need help?
 
 If you need a specific call, have a suggestion or found a bug, do not hesitate tot leave a comment on the `Issue` tab.
