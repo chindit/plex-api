@@ -127,7 +127,7 @@ abstract class Media
 
 	public function getThumb(): string
 	{
-		return $this->thumb ?? '';
+		return $this->thumb;
 	}
 
 	public function getDuration(): int

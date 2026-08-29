@@ -3,46 +3,55 @@ declare(strict_types=1);
 
 namespace Chindit\PlexApi\Model;
 
+use Chindit\Collection\Collection;
+use Chindit\PlexApi\Service\Connector;
+
 final class Server
 {
+    /**
+     * @var Collection<Connection>
+     */
+    private Collection $connections;
 	public function __construct(
-		private string $name,
-		private string $host,
-		private string $address,
-		private int $port,
-		private string $identifier,
-		private string $version
+        public readonly string $identifier,
+		public readonly string $name,
+		public readonly string $version,
+        public readonly string $token,
 	)
-	{}
-
-	public function getName(): string
 	{
-		return $this->name;
-	}
+        $this->connections = new Collection();
+    }
 
-	public function getHost(): string
-	{
-		return $this->host;
-	}
+    public function addConnection(Connection $connection): self
+    {
+        $this->connections->push($connection);
 
-	public function getAddress(): string
-	{
-		return $this->address;
-	}
+        return $this;
+    }
 
-	public function getPort(): int
-	{
-		return $this->port;
-	}
+    /**
+     * @return Collection<Connection>
+     */
+    public function getConnections(): Collection
+    {
+        return $this->connections;
+    }
 
-	public function getIdentifier(): string
-	{
-		return $this->identifier;
-	}
+    public static function fetchByHost(string $host, string $token, int $port = 32400): ?self
+    {
+        try {
+            $connection = new Connection($host, $port, false, false, false);
+            $response = new Connector($token, $connection, [])->get('/identity');
 
-	public function getVersion(): string
-	{
-		return $this->version;
-	}
-
+            return new Server(
+                (string)$response['machineIdentifier'],
+                'My Plex',
+                (string)$response['version'],
+                $token,
+            )
+                ->addConnection($connection);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
 }

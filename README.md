@@ -1,56 +1,64 @@
 # Plex API
 
-### Installation
+## Installation
 
 ```shell
 composer require chindit/plex-api
 ```
 
-### Usage
+## Usage
 
-Create a new instance of `PlexServer`
-
-Minimal parameters to pass are server host and token.
-```php
-$plex = new Chindit\PlexServer('http://path.to.my.plex', 'MyPlexToken');
-```
-You can also provide a specific port as third argument (default is 32400) and 
-some options as fourth parameters.  Options must be suppored by Symfony's HTTP client.
-
-Most common parameters are `max_redirects` and `timeout`.
-
-In this case, server initialization will look like this:
+Create an account with a Plex token. The account can discover the Plex servers
+available to that token:
 
 ```php
-$plex = new Chindit\PlexServer('http://path.to.my.plex', 'MyPlexToken', 32400, ['timeout' => 10]);
+use Chindit\PlexApi\Account;
+
+$account = new Account('MyPlexToken');
+$servers = $account->getServerList();
+$plexServer = $account->getServer();
 ```
 
-To find you plex token, [check this article](https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/)
+When several servers are available, pass the server identifier:
 
-### Methods available
+```php
+$server = $servers->first();
+$plexServer = $account->getServer($server->identifier);
+```
 
-Once your `$plexserver` instance created, following methods are available:
+`getServer()` selects a reachable connection and uses the server-specific
+access token returned by Plex.
 
-* `checkConnection(): bool` Checks if connection can be made to your Plex instance.
+It is also possible to connect directly to a known server:
 
-* `servers(): array<Server>` Returns the list of active servers for your Plex instance.
-   
-   Response is an array of `Chindit\Model\Server` objects
-* `sessionsCount(): int` Returns the number of active sessions on the server.  An active session is a device streaming a media.
-* `libraries(): array<Library>` Returns all you libraries.  A Plex library is a general section like your «Movies» or «Shows» categories.  All your medias are contained in libraries.
-* `library(int $libraryId): array<Movie|Show>`  Return all the media contained in a specific library.  Library id can be obtained by a `getId()` on a `Library` object.
-* `getFromKey(int|string $ratingKey): ?Movie` Return 0 or 1 movie based on the given rating key.
-* `refreshMovie(Movie $movie): ?Movie` Refresh movie information from Plex server. Will return `null` if movie is not longer found on Plex.
+```php
+$account = new Account('MyPlexToken', 'https://path.to.my.plex', 32400);
+$plexServer = $account->getServer();
+```
 
-   Example:
-   ```php
-   $myLibraries = $plexServer->libraries();
-   $theLibraryIWant = $myLibraries[0]; // Choose any library you want;
-   $myMedias = $plexServer->library($theLibraryIWant->getId());
-   ```
+The port defaults to `32400`. To find a Plex token, see the [Plex
+documentation](https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/).
 
-    Response is an array of `Chindit\Model\Movie` and `Chindit\Model\Show` objects.
+## Available methods
 
-### Need help?
+Once `$plexServer` has been created:
 
-If you need a specific call, have a suggestion or found a bug, do not hesitate tot leave a comment on the `Issue` tab.
+- `sessionsCount(): int` returns the number of active streaming sessions.
+- `libraries(): array<Library>` returns the libraries available to the account.
+- `library(int $libraryId, bool $unwatchedOnly = false): array` returns the media in a library.
+- `getTracksForAlbum(int $albumId): array` returns the tracks in an album.
+- `getFromKey(int|string $ratingKey): ?Movie` returns a movie by its rating key.
+- `refreshMovie(Movie $movie): ?Movie` refreshes a movie from Plex.
+- `getThumb(string $thumb): string` downloads a thumbnail.
+
+Example:
+
+```php
+$libraries = $plexServer->libraries();
+$library = $libraries[0];
+$media = $plexServer->library($library->getId());
+```
+
+## Need help?
+
+For a missing call or a bug, open an issue in the repository.
